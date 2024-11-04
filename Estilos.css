@@ -1,0 +1,62 @@
+/* Estilo para un formulario de patentes */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 50%;
+    margin: 50px auto;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra los divs horizontalmente */
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Asegura que el formulario ocupe todo el ancho del contenedor */
+}
+
+label {
+    margin-bottom: 10px;
+    color: #555;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+textarea {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%; /* Asegura que los inputs ocupen todo el ancho del formulario */
+}
+
+input[type="submit"] {
+    background-color: #5cb85c;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%; /* Asegura que el botón ocupe todo el ancho del formulario */
+}
+
+input[type="submit"]:hover {
+    background-color: #4cae4c;
+}

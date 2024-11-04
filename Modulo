@@ -1,0 +1,42 @@
+<script>
+    function sendEmailWithAttachment(jsonData) {
+        const email = 'recipient@example.com'; // Replace with the recipient's email address
+        const subject = 'Formulario de Patentes y SEREMIS';
+        const body = `Adjunto encontrará el JSON generado:\n\n${JSON.stringify(jsonData, null, 2)}`;
+        
+        const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailtoLink;
+    }
+
+    document.getElementById('patentForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const formData = new FormData(form);
+        const jsonData = {};
+
+        formData.forEach((value, key) => {
+            if (key.includes('archivo')) {
+                const file = value;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    jsonData[key] = {
+                        fileName: file.name,
+                        fileContent: e.target.result
+                    };
+                    document.getElementById('jsonOutput').textContent = JSON.stringify(jsonData, null, 2);
+                    document.getElementById('jsonCard').style.display = 'block';
+                    sendEmailWithAttachment(jsonData);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                jsonData[key] = value;
+            }
+        });
+
+        // For demonstration purposes, we log the JSON data to the console
+        // In a real application, you might send this data to a server
+        document.getElementById('jsonOutput').textContent = JSON.stringify(jsonData, null, 2);
+        document.getElementById('jsonCard').style.display = 'block';
+    });
+</script>

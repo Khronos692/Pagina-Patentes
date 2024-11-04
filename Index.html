@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Patentes</title>
+    <link rel="stylesheet" href="Estilos.css">
+</head>
+<body>
+    <header>
+        <h1>Formulario de Patentes y SEREMIS</h1>
+    </header>
+    <main>
+        <form id="patentForm" enctype="multipart/form-data">
+            <div>
+                <label for="File">File:</label>
+                <p></p>
+                <select id="File" name="File" required onchange="toggleOtherInput(this)">
+                    <option value="" disabled selected>Seleccione una opción</option>
+                    <!-- Options will be populated here -->
+                    <option value="otros">Otros</option>
+                </select>
+                <input type="number" id="otherFile" name="otherFile" maxlength="3" style="display:none;" oninput="this.value = this.value.slice(0, 3);">
+            </div>
+            <p></p>
+            <div>
+                <label for="PatenteoSEREMI">Patente o SEREMI:</label>
+                <p></p>
+                <select id="PatenteoSEREMI" name="PatenteoSEREMI" required onchange="toggleQuestions(this)">
+                    <option value="" disabled selected>Seleccione una opción</option>
+                    <option value="Patente">Patente</option>
+                    <option value="SEREMI">SEREMI</option>
+                </select>
+            </div>
+            <p></p>
+            <div id="patenteQuestions" style="display:none;">
+                <div>
+                    <label for="negocioPatente">A que negocio Corresponde:</label>
+                    <input type="text" id="negocioPatente" name="negocioPatente">
+                </div>
+                <div>
+                    <label for="tipoPatente">Es Patente provisoria o definitiva:</label>
+                    <input type="text" id="tipoPatente" name="tipoPatente">
+                </div>
+                <div>
+                    <label for="razonPatente">Razón Social de la Patente:</label>
+                    <input type="text" id="razonPatente" name="razonPatente">
+                </div>
+                <div>
+                    <label for="rutPatente">Rut de la Patente:</label>
+                    <input type="text" id="rutPatente" name="rutPatente">
+                </div>
+                <div>
+                    <label for="rolPatente">Rol de la Patente:</label>
+                    <input type="text" id="rolPatente" name="rolPatente">
+                </div>
+                <div>
+                    <label for="giroPatente">Giro de la Patente:</label>
+                    <input type="text" id="giroPatente" name="giroPatente">
+                </div>
+                <div>
+                    <label for="semestrePatente">Semestre de la Patente:</label>
+                    <input type="text" id="semestrePatente" name="semestrePatente">
+                </div>
+                <div>
+                    <label for="anioPatente">Año de la Patente:</label>
+                    <input type="text" id="anioPatente" name="anioPatente">
+                </div>
+                <div>
+                    <label for="archivoPatente">Carga de Documento:</label>
+                    <input type="file" id="archivoPatente" name="archivoPatente">
+                </div>
+            </div>
+            <div id="seremiQuestions" style="display:none;">
+                <div>
+                    <label for="negocioSeremi">A que negocio Corresponde:</label>
+                    <input type="text" id="negocioSeremi" name="negocioSeremi">
+                </div>
+                <div>
+                    <label for="cambioRazonSeremi">Cambio de Razón Social:</label>
+                    <input type="text" id="cambioRazonSeremi" name="cambioRazonSeremi">
+                </div>
+                <div>
+                    <label for="razonSeremi">Razón Social de SEREMI:</label>
+                    <input type="text" id="razonSeremi" name="razonSeremi">
+                </div>
+                <div>
+                    <label for="rutSeremi">Rut de SEREMI:</label>
+                    <input type="text" id="rutSeremi" name="rutSeremi">
+                </div>
+                <div>
+                    <label for="rolSeremi">Rol de SEREMI:</label>
+                    <input type="text" id="rolSeremi" name="rolSeremi">
+                </div>
+                <div>
+                    <label for="giroSeremi">Giro de SEREMI:</label>
+                    <input type="text" id="giroSeremi" name="giroSeremi">
+                </div>
+                <div>
+                    <label for="fechaSeremi">Fecha que presenta el documento de SEREMI:</label>
+                    <input type="date" id="fechaSeremi" name="fechaSeremi">
+                </div>
+                <div>
+                    <label for="archivoSeremi">Carga de Documento:</label>
+                    <input type="file" id="archivoSeremi" name="archivoSeremi">
+                </div>
+            </div>
+            <p></p>
+            <div>
+                <button type="submit">Enviar</button>
+            </div>
+            <div>
+                <pre id="jsonOutput"></pre>
+            </div>
+        </form>
+        <div id="jsonCard" style="display:none; border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
+            <h2>JSON Generado:</h2>
+            <pre id="jsonOutput"></pre>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <img src="Enex-Shell.png" alt="Enex-Shell" style="text-align: center">
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Patentes</p>
+    </footer>
+
+    <script>
+        function toggleOtherInput(select) {
+            const otherInput = document.getElementById('otherFile');
+            if (select.value === 'otros') {
+                otherInput.style.display = 'block';
+                otherInput.required = true;
+            } else {
+                otherInput.style.display = 'none';
+                otherInput.required = false;
+            }
+        }
+
+        function toggleQuestions(select) {
+            const patenteQuestions = document.getElementById('patenteQuestions');
+            const seremiQuestions = document.getElementById('seremiQuestions');
+            if (select.value === 'Patente') {
+                patenteQuestions.style.display = 'block';
+                seremiQuestions.style.display = 'none';
+            } else if (select.value === 'SEREMI') {
+                seremiQuestions.style.display = 'block';
+                patenteQuestions.style.display = 'none';
+            } else {
+                patenteQuestions.style.display = 'none';
+                seremiQuestions.style.display = 'none';
+            }
+        }
+
+        // Function to load CSV and populate options
+        function loadCSVAndPopulateOptions() {
+            fetch('list.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const lines = data.split(',');
+                    const select = document.getElementById('File');
+                    lines.forEach(line => {
+                        const option = document.createElement('option');
+                        option.value = line.trim();
+                        option.textContent = line.trim();
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading CSV:', error));
+        }
+
+        // Call the function to load CSV and populate options
+        document.addEventListener('DOMContentLoaded', loadCSVAndPopulateOptions);
+
+        document.getElementById('patentForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const jsonData = {};
+
+            formData.forEach((value, key) => {
+                if (key.includes('archivo')) {
+                    const file = value;
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        jsonData[key] = {
+                            fileName: file.name,
+                            fileContent: e.target.result
+                        };
+                        document.getElementById('jsonOutput').textContent = JSON.stringify(jsonData, null, 2);
+                        document.getElementById('jsonCard').style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    jsonData[key] = value;
+                }
+            });
+
+            // For demonstration purposes, we log the JSON data to the console
+            // In a real application, you might send this data to a server
+            document.getElementById('jsonOutput').textContent = JSON.stringify(jsonData, null, 2);
+            document.getElementById('jsonCard').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
