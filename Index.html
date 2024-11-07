@@ -125,83 +125,108 @@
         <p>&copy; 2024 Patentes</p>
     </footer>
 
-    <script>
-        function toggleOtherInput(select) {
-            const otherInput = document.getElementById('otherFile');
-            if (select.value === 'otros') {
-                otherInput.style.display = 'block';
-                otherInput.required = true;
-            } else {
-                otherInput.style.display = 'none';
-                otherInput.required = false;
-            }
+<script>
+    function toggleOtherInput(select) {
+        const otherInput = document.getElementById('otherFile');
+        if (select.value === 'otros') {
+            otherInput.style.display = 'block';
+            otherInput.required = true;
+        } else {
+            otherInput.style.display = 'none';
+            otherInput.required = false;
         }
+    }
 
-        function toggleQuestions(select) {
-            const patenteQuestions = document.getElementById('patenteQuestions');
-            const seremiQuestions = document.getElementById('seremiQuestions');
-            if (select.value === 'Patente') {
-                patenteQuestions.style.display = 'block';
-                seremiQuestions.style.display = 'none';
-            } else if (select.value === 'SEREMI') {
-                seremiQuestions.style.display = 'block';
-                patenteQuestions.style.display = 'none';
-            } else {
-                patenteQuestions.style.display = 'none';
-                seremiQuestions.style.display = 'none';
-            }
+    function toggleQuestions(select) {
+        const patenteQuestions = document.getElementById('patenteQuestions');
+        const seremiQuestions = document.getElementById('seremiQuestions');
+        if (select.value === 'Patente') {
+            patenteQuestions.style.display = 'block';
+            seremiQuestions.style.display = 'none';
+        } else if (select.value === 'SEREMI') {
+            seremiQuestions.style.display = 'block';
+            patenteQuestions.style.display = 'none';
+        } else {
+            patenteQuestions.style.display = 'none';
+            seremiQuestions.style.display = 'none';
         }
+    }
 
-        // Function to load CSV and populate options (y)
-        function loadCSVAndPopulateOptions() {
-            fetch('list.csv')
-                .then(response => response.text())
-                .then(data => {
-                    const lines = data.split(',');
-                    const select = document.getElementById('File');
-                    lines.forEach(line => {
-                        const option = document.createElement('option');
-                        option.value = line.trim();
-                        option.textContent = line.trim();
-                        select.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error loading CSV:', error));
-        }
+    // Función para cargar el CSV y poblar las opciones
+    function loadCSVAndPopulateOptions() {
+        fetch('list.csv')
+            .then(response => response.text())
+            .then(data => {
+                const lines = data.split(',');
+                const select = document.getElementById('File');
+                lines.forEach(line => {
+                    const option = document.createElement('option');
+                    option.value = line.trim();
+                    option.textContent = line.trim();
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error loading CSV:', error));
+    }
 
-        // Call the function to load CSV and populate options
-        document.addEventListener('DOMContentLoaded', loadCSVAndPopulateOptions);
+    // Llama a la función para cargar el CSV y poblar las opciones
+    document.addEventListener('DOMContentLoaded', loadCSVAndPopulateOptions);
 
-        document.getElementById('patentForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            const form = event.target;
-            const formData = new FormData(form);
-            const jsonData = {};
+    document.getElementById('patentForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const formData = new FormData(form);
+        const jsonData = {};
 
-            formData.forEach((value, key) => {
-                if (key.includes('archivo')) {
-                    const file = value;
-                    const reader = new FileReader();
+        const filePromises = [];
+
+        formData.forEach((value, key) => {
+            if (key.includes('archivo')) {
+                const file = value;
+                const reader = new FileReader();
+                const filePromise = new Promise((resolve, reject) => {
                     reader.onload = function(e) {
                         jsonData[key] = {
                             fileName: file.name,
                             fileContent: e.target.result
                         };
-                        document.getElementById('jsonOutput').textContent = JSON.stringify(jsonData, null, 2);
-                        document.getElementById('jsonCard').style.display = 'block';
+                        resolve();
                     };
-                    reader.readAsDataURL(file);
-                } else {
-                    jsonData[key] = value;
-                }
-            });
+                    reader.onerror = reject;
+                });
+                reader.readAsDataURL(file);
+                filePromises.push(filePromise);
+            } else {
+                jsonData[key] = value;
+            }
+        });
 
-            // For demonstration purposes, we log the JSON data to the console
-            // In a real application, you might send this data to a server
+        Promise.all(filePromises).then(() => {
+            // Muestra el JSON generado
             document.getElementById('jsonOutput').textContent = JSON.stringify(jsonData, null, 2);
             document.getElementById('jsonCard').style.display = 'block';
-        });
-    </script>
+
+            // Envía el JSON al flujo de Power Automate
+            const url = 'https://prod-47.westus.logic.azure.com:443/workflows/3e72171b88ef445f9b2ac1dbc292ea2a/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=cEQvBW_QkRfrVZZBEd-zQBPX-U0gRWGkaesgXPbpOs8'; // Reemplaza con la URL de tu flujo
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Datos enviados exitosamente');
+                } else {
+                    console.error('Error al enviar los datos');
+                }
+            })
+            .catch(error => console.error('Error en la solicitud:', error));
+        }).catch(error => console.error('Error al leer los archivos:', error));
+    });
+</script>
 </body>
 </html>
+
