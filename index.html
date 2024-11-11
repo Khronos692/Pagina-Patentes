@@ -152,25 +152,24 @@
         }
     }
 
-    // Función para cargar el CSV y poblar las opciones
-    function loadCSVAndPopulateOptions() {
-        fetch('list.csv')
-            .then(response => response.text())
+    // Función para cargar el JSON y poblar las opciones
+    function loadJSONAndPopulateOptions() {
+        fetch('list.json')
+            .then(response => response.json())
             .then(data => {
-                const lines = data.split(',');
                 const select = document.getElementById('File');
-                lines.forEach(line => {
+                data.forEach(item => {
                     const option = document.createElement('option');
-                    option.value = line.trim();
-                    option.textContent = line.trim();
+                    option.value = item.trim();
+                    option.textContent = item.trim();
                     select.appendChild(option);
                 });
             })
-            .catch(error => console.error('Error loading CSV:', error));
+            .catch(error => console.error('Error loading JSON:', error));
     }
 
     // Llama a la función para cargar el CSV y poblar las opciones
-    document.addEventListener('DOMContentLoaded', loadCSVAndPopulateOptions);
+    document.addEventListener('DOMContentLoaded', loadJSONAndPopulateOptions);
 
     document.getElementById('patentForm').addEventListener('submit', function(event) {
         event.preventDefault();
