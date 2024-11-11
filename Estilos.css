@@ -15,7 +15,7 @@ body {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-     /* Centra los divs horizontalmente */
+    align-items: center; /* Centra los divs horizontalmente */
 }
 
 h1 {
